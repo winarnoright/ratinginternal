@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Rating</title>
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" /> -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+
+  <style>
+    .fa-star {
+      color: #ffd700;
+    }
+    .fa-star-o {
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Aplikasi Rating</h1>
+    <span class="score">
+    <div v-for="(star, index) in stars" :key="index" class="score-wrap">
+      <span class="stars-active">
+      <i class="fa" :class="{'fa-star': rating >= index + 1, 'fa-star-o': rating < index + 1}" @click="rate(index + 1)"></i>
+    </span>
+    </div>
+  </span>
+    <p>Nilai: {{ rating }}/5</p>
+  </div>
+  <script src="https://unpkg.com/vue@3"></script>
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          stars: Array(5).fill(0),
+          rating: 2
+        }
+      },
+      methods: {
+        rate(rating) {
+          this.rating = rating;
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
