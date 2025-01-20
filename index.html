@@ -19,21 +19,30 @@
 <body>
   <div id="app">
     <h1>Aplikasi Rating</h1>
-    <span class="score">
-    <div v-for="(star, index) in stars" :key="index" class="score-wrap">
-      <span class="stars-active">
+
+    <span v-for="(star, index) in stars" :key="index">
       <i class="fa" :class="{'fa-star': rating >= index + 1, 'fa-star-o': rating < index + 1}" @click="rate(index + 1)"></i>
     </span>
-    </div>
-  </span>
-    <p>Nilai: {{ rating }}/5</p>
+    <p>Nilai: {{ rating }}/4</p>
+
+
+
+
+
   </div>
+
+
+
+
+
+
+
   <script src="https://unpkg.com/vue@3"></script>
   <script>
     Vue.createApp({
       data() {
         return {
-          stars: Array(5).fill(0),
+          stars: Array(4).fill(0),
           rating: 2
         }
       },
