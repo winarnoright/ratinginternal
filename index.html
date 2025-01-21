@@ -1,57 +1,185 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aplikasi Rating</title>
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" /> -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
-
+  <title>Form Rating</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   <style>
     .fa-star {
       color: #ffd700;
     }
-    .fa-star-o {
-      color: #ccc;
+ /*   .fa-star-o {
+      color: #ccc;*/
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <h1>Aplikasi Rating</h1>
+    <h4>Berikan rating nilai untuk layanan internal</h14>
+    <form @submit.prevent="kirimData">
 
-    <span v-for="(star, index) in stars" :key="index">
-      <i class="fa" :class="{'fa-star': rating >= index + 1, 'fa-star-o': rating < index + 1}" @click="rate(index + 1)"></i>
-    </span>
-    <p>Nilai: {{ rating }}/4</p>
+      <div>
+      <label>Ruangan:</label>
+      <select v-model="ruangan" @change="tampilkanForm">
+        <option value="">Pilih Ruangan</option>
+        <option v-for="(ruang, index) in ruanganList" :key="index" :value="ruang">{{ ruang }}</option>
+      </select>
+      </div>
 
 
-
-
-
+    <div v-if="ruangan">
+      <div>
+        <label>Tanggal & Jam:</label>
+        <input type="datetime-local" v-model="tanggalJam" required />
+      </div>
+      <div>
+        <label>Nama:</label>
+        <input type="text" v-model="nama" required />
+      </div>
+      <div>
+        <label>Nomor HP:</label>
+        <input type="tel" v-model="nomorHp" required />
+      </div>
+       <div>
+        <label>Rating:</label>
+        <span v-for="n in 4" :key="n">
+          <i :class="n <= rating ? 'fas fa-star' : 'far fa-star'" @click="ubahRating(n)"></i>
+        </span>
+        ({{ rating }}/4)
+      </div>
+      <div>
+        <label>Saran:</label>
+        <textarea v-model="saran"></textarea>
+      </div>
+      <button type="submit">Kirim</button>
+    </div>
+    </form>
+    <div v-if="pesan">{{ pesan }}</div>
   </div>
 
-
-
-
-
-
-
   <script src="https://unpkg.com/vue@3"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Papa/5.3.2/papaparse.min.js"></script>
   <script>
     Vue.createApp({
       data() {
         return {
-          stars: Array(4).fill(0),
-          rating: 2
+          tanggalJam: new Date().toISOString().slice(0, 16),
+          nama: '',
+          nomorHp: '',
+          ruangan: '',
+          rating: 0,
+          saran: '',
+          pesan: '',
+          ruanganList: ['Ruangan 1', 'Ruangan 2', 'Ruangan 3', 'Ruangan 4', 'Ruangan 5']
+          // ruanganList: []
         }
       },
+      // mounted() {
+      //   this.loadRuangan();
+      // },
       methods: {
-        rate(rating) {
-          this.rating = rating;
+      //   loadRuangan() {
+      //     // fetch('ruangan.csv')https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1
+      //     // fetch('https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1')
+      //     fetch('ruangan.csv')
+      //       .then(response => response.text())
+      //       .then(csv => {
+      //         Papa.parse(csv, {
+      //           header: false,
+      //           complete: results => {
+      //             this.ruanganList = results.data.map(row => row[0]);
+      //           }
+      //         });
+      //       });
+      //   },
+
+        ubahRating(n) {
+          this.rating = n;
+        },
+        kirimData() {
+          const data = {
+            tanggalJam: this.tanggalJam,
+            nama: this.nama,
+            nomorHp: this.nomorHp,
+            ruangan: this.ruangan,
+            rating: this.rating,
+            saran: this.saran
+          };
+
+          // Kirim data ke API
+          fetch('https://api.example.com/rating', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => response.json())
+          .then(data => {
+            this.pesan = 'Terimakasih rating kamu berhasil disimpan!';
+            this.tanggalJam = '';
+            this.nama = '';
+            this.nomorHp = '';
+            this.ruangan = '';
+            this.rating = 0;
+            this.saran = '';
+          })
+          .catch(error => {
+            this.pesan = 'Gagal mengirim data!';
+          });
         }
       }
     }).mount('#app');
   </script>
 </body>
 </html>
+
+
+<!-- 
+
+Penjelasan
+
+1. Import Vue.js CDN dan Font Awesome.
+2. Buat form dengan field input tanggal & jam, nama, nomor HP, ruangan, rating, dan saran.
+3. Gunakan v-model untuk mengikat data ke komponen.
+4. Buat metode ubahRating untuk mengubah rating.
+5. Buat metode kirimData untuk mengirim data ke API.
+6. Gunakan fetch untuk mengirim data ke API.
+7. Tampilkan pesan sukses atau gagal.
+
+API Endpoint
+
+Pastikan API endpoint Anda menerima data dengan metode POST. Contoh:
+
+Node.js (Express)
+
+const express = require('express');
+const app = express();
+
+app.post('/rating', (req, res) => {
+  const { tanggalJam, nama, nomorHp, ruangan, rating, saran } = req.body;
+  // Simpan data ke database
+  res.json({ pesan: 'Data berhasil dikirim' });
+});
+
+
+Python (Flask)
+
+from flask import Flask, request, jsonify
+app = Flask(__name__)
+
+@app.route('/rating', methods=['POST'])
+def kirim_rating():
+    tanggal_jam = request.json['tanggalJam']
+    nama = request.json['nama']
+    nomor_hp = request.json['nomorHp']
+    ruangan = request.json['ruangan']
+    rating = request.json['rating 
+
+https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/edit?usp=sharing sheet list ruangan
+    "gsheet_url='https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet=Sheet1'.format(gsheetid,sheet_name)\n",
+    "d = pd.read_csv(gsheet_url)\n"
+    "gsheet_url='https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1'.format(gsheetid,sheet_name)\n",
+    "d = pd.read_csv(gsheet_url)\n"
+
+  list ruangan dari sheet = https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1
+    -->
