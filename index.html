@@ -63,7 +63,6 @@
     Vue.createApp({
       data() {
         return {
-          tanggalJam: moment().locale('id').format('YYYY-MM-DDTHH:mm'),
           nama: '',
           nomorHp: '',
           ruangan: '',
@@ -77,58 +76,38 @@
       // mounted() {
       //   this.loadRuangan();
       // },
-      methods: {
-      //   loadRuangan() {
-      //     // fetch('ruangan.csv')https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1
-      //     // fetch('https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1')
-      //     fetch('ruangan.csv')
-      //       .then(response => response.text())
-      //       .then(csv => {
-      //         Papa.parse(csv, {
-      //           header: false,
-      //           complete: results => {
-      //             this.ruanganList = results.data.map(row => row[0]);
-      //           }
-      //         });
-      //       });
-      //   },
-
-        ubahRating(n) {
-          this.rating = n;
-        },
-        kirimData() {
-          const data = {
-            tanggalJam: this.tanggalJam,
-            nama: this.nama,
-            nomorHp: this.nomorHp,
-            ruangan: this.ruangan,
-            rating: this.rating,
-            saran: this.saran
-          };
-
-          // Kirim data ke API
-          fetch('https://api.example.com/rating', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
+      methods(){
+            kirimData() {
+                // https://script.google.com/macros/s/AKfycby7k5eJa3N8wCbL5k4CsdDE1PEfbW2-gQMcB_jRFV0bPF-HbRrOqhgpl5Y_rkmrE9w6/exec
+                const url = 'https://script.google.com/macros/s/AKfycby7k5eJa3N8wCbL5k4CsdDE1PEfbW2-gQMcB_jRFV0bPF-HbRrOqhgpl5Y_rkmrE9w6/exec';
+                axios.get(url, {
+                  params:{
+                    nama: encodeURIComponent(this.nama),
+                    nomorHP: encodeURIComponent(this.nomorHP),
+                    ruangan: encodeURIComponent(this.ruangan),
+                    rating: encodeURIComponent(this.rating),
+                    saran: encodeURIComponent(this.saran)
+                }
+              })
+                .then(response => {
+                    console.log(response.data);
+                    alert('Terimakasih telah berkontribusi untuk kemajuan Soerojo Hospital, senang menjadi bagian dari pengalaman pelayanan kesehatan Anda');
+                    // Reset form setelah data dikirim
+                    this.nama = '';
+                    this.nomorHP = '';
+                    this.ruangan = '';
+                    this.rating = '';
+                    this.saran = '';
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Gagal mengirim data!');
+                });
             },
-            body: JSON.stringify(data)
-          })
-          .then(response => response.json())
-          .then(data => {
-            this.pesan = 'Terimakasih rating kamu berhasil disimpan!';
-            this.tanggalJam = '';
-            this.nama = '';
-            this.nomorHp = '';
-            this.ruangan = '';
-            this.rating = 0;
-            this.saran = '';
-          })
-          .catch(error => {
-            this.pesan = 'Gagal mengirim data!';
-          });
-        }
-      }
+            ubahRating(n) {
+              this.rating = n;
+            }
+          }
     }).mount('#app');
   </script>
 </body>
