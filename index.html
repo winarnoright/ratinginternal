@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulir Feedback</title>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/w3-css/4.1.0/w3.css" integrity="sha512-Ef5r/bdKQ7JAmVBbTgivSgg3RM+SLRjwU0cAgySwTSv4+jYcVeDukMp+9lZGWT78T4vCUxgT3g+E8t7uabwRuw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -15,23 +16,52 @@
 
     
   </style>
+
+<!--    ruangan:'',
+        nama: '',
+        nomorHp: '',
+        rating: 0,
+        saran: '',
+        maxRating: 5,
+        rsrating:'',
+        direktorat:'',
+
+        ruangan:'Tulip1',
+        nama: 'Winarno',
+        nomorHp: '1234',
+        rating: 1,
+        saran: 'Baik',
+        maxRating: 5,
+        rsrating:'ya',
+        direktorat:'',
+
+ -->
+
+
 </head>
 <body class="w3-containter w3-padding">
     <div x-data="{
+
         ruangan:'',
         nama: '',
         nomorHp: '',
         rating: 0,
         saran: '',
         maxRating: 5,
-        ruanganList:['Tulip1','Lily1'],
-        rsrating:''
+        rsrating:'',
+        direktorat:'',
+
+
+        direktoratList:['PMK','SDMPP','PKLO','Non direktorat'],
+        ruanganList:['Tulip1','Lily1']
         }">
         <div class="w3-center">
-        <h1 >Form Rating</h1>
+        <h4 >Form Rating</h4>
     </div>
         <form class="w3-form">
-            <template x-if = "(ruangan.length < 3) || (nama.length < 2 || nomorHp.length < 4)">
+            <template x-if="rsrating == '' || rsrating == 'tidak'">
+                <div>
+            <template x-transition:enter.duration.700ms="slide-up" x-if = "(ruangan.length < 3) || (nama.length < 2 || nomorHp.length < 4)">
                         <div>
                             <label for="nama">Nama</label>
                             <input class="w3-input w3-round w3-border" type="text" id="nama" x-model="nama">
@@ -41,7 +71,7 @@
                             <label for="nomorHp">Nomor HP</label>
                             <input class="w3-input w3-round w3-border" type="tel" id="nomorHp" x-model="nomorHp">
                         <br>
-                        <template x-if="(nama.length > 1 && nomorHp.length > 3)">
+                        <template x-transition:enter.duration.700ms="slide-down" x-if="(nama.length > 1 && nomorHp.length > 3)">
                             <div>
                       <label>Kamu mau memberi rating unit/ ruangan apa?</label>
                             <select class="w3-input" x-model="ruangan">
@@ -54,10 +84,10 @@
                     </div>
                 </template>
 
-            <template x-if = "(ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3)" >
+            <template x-transition:enter.duration.700ms="slide-down" x-if = "(ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3)" >
 
                         <div>
-                            <label for="rating">Hai <span x-text="`${nama}`"></span><br>Berapa rating untuk unit/ ruangan <span x-text="`${ruangan}`"></span>?</label>
+                            <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Berapa rating untuk unit/ ruangan <span x-text="`${ruangan}`"></span>?</label>
                             <!-- <span x-text="`${rating}`"></span> -->
                             <div class="rating w3-center w3-xxlarge">
                                 <template x-for="i in maxRating" :key="i">
@@ -66,43 +96,67 @@
                             </div>
            
                             <label for="saran">Saran:</label>
-                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea><br>
-                            <template x-if = "rating >=1">
-                            <p class="w3-center w3-bold"><b>Terimakasih telah memberi rating <span x-text="`${rating} Bintang`"></span> untuk unit/ ruangan <span x-text="`${ruangan}`"></span></label></b></p>
-                            <p>Kamu bisa langsung mengirim penilaian kamu dengan klik <b>kirim</b> tapi tapi jika kamu tidak keberatan, bisa melanjutkan untuk memberi penilaian tentang rumah sakit dengan parameter yang telah ditentukan</p>
-                            <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="ya">  Ya lanjut ke penilaian RS</label><br>
+                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea>
 
-                            <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="tidak">  Tidak kirim penilaian ini saja</label><br><br>
-                            <template x-if="rsrating == 'tidak'" >
-                            <button class="w3-button w3-blue w3-padding" type="submit">Kirim</button>
-                            </template>
-                                
-                              </template>
-                        </div><br>
+                            <template x-if = "rating >= 1">
+                                <div>
+                                    <p class="w3-center w3-bold"><b>Terimakasih telah memberi rating <span x-text="`${rating} Bintang`"></span> untuk unit/ ruangan <span x-text="`${ruangan}`"></span></label></b></p>
 
+                                    <p>Apakah kamu bersedia untuk melanjutkan dengan memberi penilaian tentang rumah sakit dengan beberapa parameter? jika <b>Ya</b> kita akan melanjutkan ke form selanjutnya, namun jika <b>Tidak</b> silahkan klik <b>Kirim</b></p>
+                                    <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="ya">  Ya lanjut ke penilaian RS</label><br>
+
+                                    <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="tidak">  Tidak kirim penilaian ini saja</label><br><br>
+                                    <template x-if="rsrating == 'tidak'" >
+                                    <button class="w3-button w3-blue w3-padding" type="submit">Kirim</button>
+                                    </template>
+                              </div>
+                        </template>
+                        <br>
+
+                </template>
+            </div>
         </template>
-        </form><br>
+        <template  x-if="rsrating == 'ya'">>
+            <div>
+                 <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
+                 <label>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
+            
+
+         <select class="w3-input" x-model="direktorat">
+            <option value="" selected>Pilih salah satu</option>
+            <template x-for="direktorat in direktoratList">
+                <option :value="direktorat" x-text="direktorat"></option>
+            </template>
+        </select><br>
+
+
+
+        </div>
+        </template>
+
+      </form>
+
+
+
+
+
+<br><br><br><br>
+        <br>
         <div x-text="`nama: ${nama}`"></div>
         <div x-text="`hp: ${nomorHp}`"></div>
+        <div x-text="`ruang: ${ruangan}`"></div>
         <div x-text="`Rating: ${rating} Bintang`"></div>
         <div x-text="`Saran: ${saran}`"></div>
-        <div x-text="`ruang: ${ruangan}`"></div>
+        <div x-text="`direktorat: ${direktorat}`"></div>
+
+
+
+
+
+
+
+
+
     </div>
-
-<!-- <script>
-  function identitas() {
-    iden = ruangan.length < 3 && nama.length < 2 && nomorHp.length < 4;
-    return iden;
-  }
-</script>
-
-<script>
-  function nilai() {
-    nil = ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3;
-    return nil;
-  }
-</script> -->
-
 </body>
-
 </html>
