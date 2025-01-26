@@ -1,168 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Form Rating</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-  <style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Feedback</title>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/w3-css/4.1.0/w3.css" integrity="sha512-Ef5r/bdKQ7JAmVBbTgivSgg3RM+SLRjwU0cAgySwTSv4+jYcVeDukMp+9lZGWT78T4vCUxgT3g+E8t7uabwRuw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <style>
     .fa-star {
       color: #ffd700;
     }
- /*   .fa-star-o {
-      color: #ccc;*/
-    }
+
+    
   </style>
 </head>
-<body>
-  <div id="app">
-    <h4>Berikan rating nilai untuk layanan internal</h14>
-    <form @submit.prevent="kirimData">
-
-      <div>
-      <label>Ruangan:</label>
-      <select v-model="ruangan" @change="tampilkanForm">
-        <option value="">Pilih Ruangan</option>
-        <option v-for="(ruang, index) in ruanganList" :key="index" :value="ruang">{{ ruang }}</option>
-      </select>
-      </div>
-
-
-    <div v-if="ruangan">
-      <div>
-        <label>Tanggal & Jam:</label>
-        <input type="datetime-local" v-model="tanggalJam" required />
-      </div>
-      <div>
-        <label>Nama:</label>
-        <input type="text" v-model="nama" required />
-      </div>
-      <div>
-        <label>Nomor HP:</label>
-        <input type="tel" v-model="nomorHp" required />
-      </div>
-       <div>
-        <label>Rating:</label>
-        <span v-for="n in 4" :key="n">
-          <i :class="n <= rating ? 'fas fa-star' : 'far fa-star'" @click="ubahRating(n)"></i>
-        </span>
-        ({{ rating }}/4)
-      </div>
-      <div>
-        <label>Saran:</label>
-        <textarea v-model="saran"></textarea>
-      </div>
-      <button type="submit">Kirim</button>
+<body class="w3-containter w3-padding">
+    <div x-data="{
+        ruangan:'',
+        nama: '',
+        nomorHp: '',
+        rating: 0,
+        saran: '',
+        maxRating: 5,
+        ruanganList:['Tulip1','Lily1'],
+        rsrating:''
+        }">
+        <div class="w3-center">
+        <h1 >Form Rating</h1>
     </div>
-    </form>
-    <div v-if="pesan">{{ pesan }}</div>
-  </div>
+        <form class="w3-form">
+            <template x-if = "(ruangan.length < 3) || (nama.length < 2 || nomorHp.length < 4)">
+                        <div>
+                            <label for="nama">Nama</label>
+                            <input class="w3-input w3-round w3-border" type="text" id="nama" x-model="nama">
+                        <br>
 
-  <script src="https://unpkg.com/vue@3"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Papa/5.3.2/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-      <!-- Tambahkan CDN Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                        
+                            <label for="nomorHp">Nomor HP</label>
+                            <input class="w3-input w3-round w3-border" type="tel" id="nomorHp" x-model="nomorHp">
+                        <br>
+                        <template x-if="(nama.length > 1 && nomorHp.length > 3)">
+                            <div>
+                      <label>Kamu mau memberi rating unit/ ruangan apa?</label>
+                            <select class="w3-input" x-model="ruangan">
+                                <option value="" selected>Pilih salah satu</option>
+                                <template x-for="ruang in ruanganList">
+                                    <option :value="ruang" x-text="ruang"></option>
+                                </template>
+                            </select><br></div>
+                    </template>
+                    </div>
+                </template>
 
-  <script>
-    Vue.createApp({
-      data() {
-        return {
-          nama: '',
-          nomorHp: '',
-          ruangan: '',
-          rating: 0,
-          saran: '',
-          pesan: '',
-          ruanganList: ['Ruangan 1', 'Ruangan 2', 'Ruangan 3', 'Ruangan 4', 'Ruangan 5']
-          // ruanganList: []
-        }
-      },
-      // mounted() {
-      //   this.loadRuangan();
-      // },
-      methods(){
-            kirimData() {
-                // https://script.google.com/macros/s/AKfycby7k5eJa3N8wCbL5k4CsdDE1PEfbW2-gQMcB_jRFV0bPF-HbRrOqhgpl5Y_rkmrE9w6/exec
-                const url = 'https://script.google.com/macros/s/AKfycby7k5eJa3N8wCbL5k4CsdDE1PEfbW2-gQMcB_jRFV0bPF-HbRrOqhgpl5Y_rkmrE9w6/exec';
-                axios.get(url, {
-                  params:{
-                    nama: encodeURIComponent(this.nama),
-                    nomorHP: encodeURIComponent(this.nomorHP),
-                    ruangan: encodeURIComponent(this.ruangan),
-                    rating: encodeURIComponent(this.rating),
-                    saran: encodeURIComponent(this.saran)
-                }
-              })
-                .then(response => {
-                    console.log(response.data);
-                    alert('Terimakasih telah berkontribusi untuk kemajuan Soerojo Hospital, senang menjadi bagian dari pengalaman pelayanan kesehatan Anda');
-                    // Reset form setelah data dikirim
-                    this.nama = '';
-                    this.nomorHP = '';
-                    this.ruangan = '';
-                    this.rating = '';
-                    this.saran = '';
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert('Gagal mengirim data!');
-                });
-            },
-            ubahRating(n) {
-              this.rating = n;
-            }
-          }
-    }).mount('#app');
-  </script>
+            <template x-if = "(ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3)" >
+
+                        <div>
+                            <label for="rating">Hai <span x-text="`${nama}`"></span><br>Berapa rating untuk unit/ ruangan <span x-text="`${ruangan}`"></span>?</label>
+                            <!-- <span x-text="`${rating}`"></span> -->
+                            <div class="rating w3-center w3-xxlarge">
+                                <template x-for="i in maxRating" :key="i">
+                                    <i :class="i <= rating ? 'fas fa-star' : 'far fa-star'" @click="rating = i"></i>
+                                </template>
+                            </div>
+           
+                            <label for="saran">Saran:</label>
+                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea><br>
+                            <template x-if = "rating >=1">
+                            <p class="w3-center w3-bold"><b>Terimakasih telah memberi rating <span x-text="`${rating} Bintang`"></span> untuk unit/ ruangan <span x-text="`${ruangan}`"></span></label></b></p>
+                            <p>Kamu bisa langsung mengirim penilaian kamu dengan klik <b>kirim</b> tapi tapi jika kamu tidak keberatan, bisa melanjutkan untuk memberi penilaian tentang rumah sakit dengan parameter yang telah ditentukan</p>
+                            <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="ya">  Ya lanjut ke penilaian RS</label><br>
+
+                            <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="tidak">  Tidak kirim penilaian ini saja</label><br><br>
+                            <template x-if="rsrating == 'tidak'" >
+                            <button class="w3-button w3-blue w3-padding" type="submit">Kirim</button>
+                            </template>
+                                
+                              </template>
+                        </div><br>
+
+        </template>
+        </form><br>
+        <div x-text="`nama: ${nama}`"></div>
+        <div x-text="`hp: ${nomorHp}`"></div>
+        <div x-text="`Rating: ${rating} Bintang`"></div>
+        <div x-text="`Saran: ${saran}`"></div>
+        <div x-text="`ruang: ${ruangan}`"></div>
+    </div>
+
+<!-- <script>
+  function identitas() {
+    iden = ruangan.length < 3 && nama.length < 2 && nomorHp.length < 4;
+    return iden;
+  }
+</script>
+
+<script>
+  function nilai() {
+    nil = ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3;
+    return nil;
+  }
+</script> -->
+
 </body>
+
 </html>
-
-
-<!-- 
-
-Penjelasan
-
-1. Import Vue.js CDN dan Font Awesome.
-2. Buat form dengan field input tanggal & jam, nama, nomor HP, ruangan, rating, dan saran.
-3. Gunakan v-model untuk mengikat data ke komponen.
-4. Buat metode ubahRating untuk mengubah rating.
-5. Buat metode kirimData untuk mengirim data ke API.
-6. Gunakan fetch untuk mengirim data ke API.
-7. Tampilkan pesan sukses atau gagal.
-
-API Endpoint
-
-Pastikan API endpoint Anda menerima data dengan metode POST. Contoh:
-
-Node.js (Express)
-
-const express = require('express');
-const app = express();
-
-app.post('/rating', (req, res) => {
-  const { tanggalJam, nama, nomorHp, ruangan, rating, saran } = req.body;
-  // Simpan data ke database
-  res.json({ pesan: 'Data berhasil dikirim' });
-});
-
-
-Python (Flask)
-
-from flask import Flask, request, jsonify
-app = Flask(__name__)
-
-@app.route('/rating', methods=['POST'])
-def kirim_rating():
-    tanggal_jam = request.json['tanggalJam']
-    nama = request.json['nama']
-    nomor_hp = request.json['nomorHp']
-    ruangan = request.json['ruangan']
-    rating = request.json['rating 
-
-https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/edit?usp=sharing sheet list ruangan
-    "gsheet_url='https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet=Sheet1'.format(gsheetid,sheet_name)\n",
-    "d = pd.read_csv(gsheet_url)\n"
-    "gsheet_url='https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1'.format(gsheetid,sheet_name)\n",
-    "d = pd.read_csv(gsheet_url)\n"
-
-  list ruangan dari sheet = https://docs.google.com/spreadsheets/d/1-KVi1y-lhDHyejq5o6jUxg3QwtOL5TPgWAULyYsrcfU/gviz/tq?tqx=out:csv&sheet=Sheet1
-    -->
