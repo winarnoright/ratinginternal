@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Feedback</title>
+    <title>Formulir Kepuasasn Pegawai</title>
     <!-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
@@ -118,7 +118,8 @@
         
 
         <div class="w3-center">
-        <h4 >Form Rating</h4>
+        <img src="rssoerojo.jpg" width="180">
+        <h4 >Formulir Kepuasan Pegawai</h4>
     </div>
         <form class="w3-form" @submit.prevent="kirimData">
             <template x-if="rsrating == '' || rsrating == 'tidak'">
@@ -133,6 +134,15 @@
                             <label for="nomorHp">Nomor HP</label>
                             <input class="w3-input w3-round w3-border" type="tel" id="nomorHp" x-model="nomorHp">
                         <br>
+
+                            <label>Direktorat</label>
+                         <select class="w3-input" x-model="direktorat">
+                            <option value="" selected>Pilih salah satu</option>
+                            <template x-for="direktorat in direktoratList">
+                                <option :value="direktorat" x-text="direktorat"></option>
+                            </template>
+                        </select><br>
+                        <hr>
                         <template x-transition:enter.duration.700ms="slide-down" x-if="(nama.length > 1 && nomorHp.length > 3)">
                             <div>
                       <label>Kamu mau memberi rating unit/ ruangan apa?</label>
@@ -187,16 +197,9 @@
         <template  x-if="rsrating == 'ya'">>
             <div>
                  <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
-                 <label>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
+         <hr>
             
 
-         <select class="w3-input" x-model="direktorat">
-            <option value="" selected>Pilih salah satu</option>
-            <template x-for="direktorat in direktoratList">
-                <option :value="direktorat" x-text="direktorat"></option>
-            </template>
-        </select><br>
-        <hr>
         <label>1. Berikan nilai kepuasan kamu tentang lingkungan kerja di Soerojo Hospital</label>
             <div class=" w3-center w3-xxlarge">
                 <template x-for="i in maxU" :key="i">
@@ -360,9 +363,11 @@
 
 
 
-    </div>
+    </div><br><br><br><br><br><br><br><br><br>
+<footer class="w3-center">Soerojo Hospital 2025</footer>
 </body>
 </html>
+
 
 
 
