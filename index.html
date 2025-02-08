@@ -3,121 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eK3 Soerojo</title>
+    <title>Formulir Kepuasasn Pegawai</title>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/w3-css/4.1.0/w3.css" integrity="sha512-Ef5r/bdKQ7JAmVBbTgivSgg3RM+SLRjwU0cAgySwTSv4+jYcVeDukMp+9lZGWT78T4vCUxgT3g+E8t7uabwRuw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <script src="https://cdn.jsdelivr.net/npm/axios@1.2.1/dist/axios.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- 
       <style>
     .fa-star {
       color: #ffd700;
     }
-     </style>
-</head>
 
-<body>
-    <div x-data="
-        {
-              username:'',
-              password:'',
-              tgllhr:'',
-              logedIn: false,
-              page:'login',
-              nama:'',
-              orang:[]
+    
+  </style>
+
+<!--    ruangan:'',
+        nama: '',
+        nomorHp: '',
+        rating: 0,
+        saran: '',
+        maxRating: 5,
+        rsrating:'',
+        direktorat:'',
+
+        U1:0,
+        U2:0,
+        U3:0,
+        U4:0,
+        U5:0,
+        U6:0,
+        U7:0,
+        U8:0,
+        maxU:4,
+        saranrs:'',
+
+        ruangan:'Tulip1',
+        nama: 'Winarno',
+        nomorHp: '1234',
+        rating: 1,
+        saran: 'Baik',
+        maxRating: 5,
+        rsrating:'ya',
+        direktorat:'PMK',
+
+        U1:3,
+        U2:3,
+        U3:3,
+        U4:3,
+        U5:3,
+        U6:3,
+        U7:3,
+        U8:3,
+        maxU:4,
+        saranrs:'bagus',
+
+        tanpa axios
+        async getruanganList(){
+             const response = await fetch('https://script.google.com/macros/s/AKfycbxJriHBe-BTWgvymP069kUaz5tI4Xai5Io2aUO4CAN3H2uQcKKqzCdWRJD-YRAsllpCgQ/exec?do=ambilruang');
+             const data = await response.json();
+             this.ruanganList = data;
+
         }
-    " style="height: 800px">
 
-        <!-- halaman login -->
-        <template x-if = "page == 'login'">
-            <div>
-                <div class="w3-center">
-                    <img src="rssoerojo.jpg" width="180">
-                <h4 >eK3 Soerojo</h4>
-                </div>
-                <form class="w3-form w3-padding" @submit.prevent="kirimData">
+
+
+ -->
+
+
+</head>
+<body class="w3-containter w3-padding">
+    <div x-data="{
+
+        ruangan:'',
+        nama: '',
+        nomorHp: '',
+        rating: 0,
+        saran: '',
+        maxRating: 5,
+        rsrating:'',
+        direktorat:'',
+
+        U1:0,
+        U2:0,
+        U3:0,
+        U4:0,
+        U5:0,
+        U6:0,
+        U7:0,
+        U8:0,
+        maxU:4,
+        saranrs:'',
+
+        direktoratList:['PMK','SDMPP','PKLO','Non direktorat'],
+        submitting: false,
+        ruanganList:[],
+         }",
+
+
+        x-init="
+        persepsiRs=(e)=>{ return { 1: '1 / 4 (Sangat Tidak Puas)', 2: '2 / 4 (Tidak Puas)', 3: '3 / 4 (Puas)', 4: '4 / 4 (Sangat Puas)' }[e];};
+
+        persepsiUnit=(e)=>{ return { 1: '1 / 5 (Sangat Tidak Puas)', 2: '2 / 5 (Tidak Puas)', 3: '3 / 5 (Puas)', 4: '4 / 5 (Sangat Puas)', 5: '5 / 5 (Sangat Puas Sekali)' }[e];};
+
+        axios.get('https://script.google.com/macros/s/AKfycbylHDnKY5iQ1JttmOcXZImU6boABRBk_iGXIC2QplkcX2KYcMHj9e8CGpxeuPNx2oxEug/exec?do=ambilruang')
+            .then(response => {
+              ruanganList = response.data;
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+          " >
+        
+
+        <div class="w3-center">
+        <img src="rssoerojo.jpg" width="180">
+        <h4 >Formulir Kepuasan Pegawai</h4>
+    </div>
+        <form class="w3-form" @submit.prevent="kirimData">
+            <template x-if="rsrating == '' || rsrating == 'tidak'">
+                <div>
+            <template x-transition:enter.duration.700ms="slide-up" x-if = "(ruangan.length < 3) || (nama.length < 2 || nomorHp.length < 4)">
                         <div>
-                            <label for="Nama">Username</label>
-                            <input class="w3-input w3-round w3-border" type="text" id="username" x-model="username">
+                            <label for="nama">Nama</label>
+                            <input class="w3-input w3-round w3-border" type="text" id="nama" x-model="nama">
                         <br>
-                            <label for="NomorHP">Password</label>
-                            <input class="w3-input w3-round w3-border" type="password" id="password" x-model="password">
+
+                        
+                            <label for="nomorHp">Nomor HP</label>
+                            <input class="w3-input w3-round w3-border" type="tel" id="nomorHp" x-model="nomorHp">
                         <br>
-                         <button class="w3-button w3-blue w3-padding" x-bind:disabled="logedIn" type="submit">
-                               <span x-show="!logedIn">login</span>
-                                <span x-show="logedIn">
-                                <i class="fas fa-spinner fa-spin"></i> Proses...
-                                </span>
-                         </button>
-                     </div>
-                 </form>
-             </div>
-        </template>
 
-
-        <!-- halaman header dan navbar -->
-        <template x-if = "page == 'home'">
-
-                    <div class="w3-bar w3-lime">
-                    <div class="w3-bar-item"> eK3 Soerojo</div>
-                    <div class="w3-right w3-bar-item" x-text = "orang[0].Nama"></div>
-                    
-                    </div>
-                
-        </template>
-
-        <!-- halaman home -->
-        <template x-if = "page == 'home'">
-            <div class="w3-padding">
-               <p>Selamat datang di Aplikasi eK3 Soerojo, berikut adalah hasil pemeriksaan dan pengukuran kebugaran di tahun 2025 ini</p>
-               
-                 <table class="w3-table-all">
-
-            
-                <!-- tampilan biasa -->
-                    <thead>
-                      <tr>
-                        <th>Tanggal</th>
-                        <th>Pemeriksaan</th>
-                        <th>Hasil</th>
-                        <th>Standar</th>
-                        <th>Kesimpulan</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    <template x-for="(o,index) in orang" :key="index">
-
-                           <template x-if="o.jenisPemeriksaan.length > 1">
-                           <tr>
-                              <td x-text="new Date(o.tglPemeriksaan).toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'})"></td>
-                              <td x-text="o.jenisPemeriksaan"></td>
-                              <td x-text="o.Nilai"></td>
-                              <td x-text="o.Standar"></td>
-                              <td x-text="o.Kesimpulan"></td>
-                            </tr>
-                        </template>
+                            <label>Direktorat</label>
+                         <select class="w3-input" x-model="direktorat">
+                            <option value="" selected>Pilih salah satu</option>
+                            <template x-for="direktorat in direktoratList">
+                                <option :value="direktorat" x-text="direktorat"></option>
+                            </template>
+                        </select><br>
+                        <hr>
+                        <template x-transition:enter.duration.700ms="slide-down" x-if="(nama.length > 1 && nomorHp.length > 3)">
+                            <div>
+                      <label>Kamu mau memberi rating unit/ ruangan apa?</label>
+                            <select class="w3-input" x-model="ruangan">
+                                <option value="" selected>Pilih salah satu</option>
+                                <template x-for="ruang in ruanganList">
+                                    <option :value="ruang.listRuangan" x-text="ruang.listRuangan"></option>
+                                </template>
+                            </select><br></div>
                     </template>
+                    </div>
+                </template>
 
-                </tbody>
-              </table>
-              <p>Terimakasih atas partisipasi dalam meningkatkan Budaya Hidup Sehat Soerojo Hospital, untuk keterangan lebih lanjut bisa menghubungi K3RS via WA <a href="https://wa.me/6285851916501">Zaenal</a>, Salam sehat</p>
+            <template x-transition:enter.duration.700ms="slide-down" x-if = "(ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3)" >
 
+                        <div>
+                            <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Berapa rating untuk unit/ ruangan <span x-text="`${ruangan}`"></span>?</label>
+                            <!-- <span x-text="`${rating}`"></span> -->
+                            <div class="rating w3-center w3-xxlarge">
+                                <template x-for="i in maxRating" :key="i">
+                                    <i :class="i <= rating ? 'fas fa-star' : 'far fa-star'" @click="rating = i"></i>
+                                </template>
+                            </div>
+                            <div class="w3-center" x-text="persepsiUnit(rating)"></div>
+                            
+                            <label for="saran">Saran:</label>
+                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea>
+
+                            <template x-if = "rating >= 1">
+                                <div>
+                                    <p class="w3-center w3-bold"><b>Terimakasih telah memberi rating <span x-text="`${rating} Bintang`"></span> untuk unit/ ruangan <span x-text="`${ruangan}`"></span></label></b></p>
+
+                                    <p>Apakah kamu bersedia untuk melanjutkan dengan memberi penilaian tentang rumah sakit dengan beberapa parameter? jika <b>Ya</b> kita akan melanjutkan ke form selanjutnya, namun jika <b>Tidak</b> silahkan klik <b>Kirim</b></p>
+                                    <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="ya">  Ya lanjut ke penilaian RS</label><br>
+
+                                    <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="tidak">  Tidak kirim penilaian ini saja</label><br><br>
+                                    <template x-if="rsrating == 'tidak'" >
+                                     <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit">
+                                           <span x-show="!submitting">Kirim</span>
+                                            <span x-show="submitting">
+                                            <i class="fas fa-spinner fa-spin"></i> Mengirim...
+                                            </span>
+                                     </button>
+                                    </template>
+                              </div>
+                        </template>
+                        <br>
+
+                </template>
             </div>
         </template>
+        <template  x-if="rsrating == 'ya'">>
+            <div>
+                 <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
+         <hr>
+            
 
-        <script src="ek3.js"></script>
+        <label>1. Berikan nilai kepuasan kamu tentang lingkungan kerja di Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U1 ? 'fas fa-star' : 'far fa-star'" @click="U1 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U1)"></div>
+            <hr>
+        <label>2. Berikan nilai kepuasan kamu tentang hubungan dengan atasan</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U2 ? 'fas fa-star' : 'far fa-star'" @click="U2 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U2)"></div>
+
+            <hr>
+        <label>3. Berikan nilai kepuasan kamu tentang penghargaan dan pengakuan dari Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U3 ? 'fas fa-star' : 'far fa-star'" @click="U3 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U3)"></div>
+
+            <hr>
+        <label>4. Berikan nilai kepuasan kamu tentang kesempatan pengembangan karier di Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U4 ? 'fas fa-star' : 'far fa-star'" @click="U4 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U4)"></div>
+
+            <hr>
+        <label>5. Berikan nilai kepuasan kamu tentang gaji dan kompensasi yang kamu terima</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U5 ? 'fas fa-star' : 'far fa-star'" @click="U5 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U5)"></div>
+
+            <hr>
+        <label>6. Berikan nilai kepuasan kamu tentang keseimbangan kerja dan kehidupan di Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U6 ? 'fas fa-star' : 'far fa-star'" @click="U6 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U6)"></div>
+
+            <hr>
+        <label>7. Berikan nilai kepuasan kamu tentang komunikasi dalam rumah sakit di Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U7 ? 'fas fa-star' : 'far fa-star'" @click="U7 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U7)"></div>
+
+            <hr>
+        <label>8. Berikan nilai kepuasan kamu tentang budaya rumah sakit di Soerojo Hospital</label>
+            <div class=" w3-center w3-xxlarge">
+                <template x-for="i in maxU" :key="i">
+                    <i :class="i <= U8 ? 'fas fa-star' : 'far fa-star'" @click="U8 = i"></i>
+                </template>
+            </div>
+                <div class="w3-center" x-text="persepsiRs(U8)"></div>
+
+            <hr>
+        <label>Berikan saran untuk perbaikan Soerojo Hospital</label>
+            <textarea class="w3-input w3-round w3-border" id="saranrs" x-model="saranrs"></textarea>
+            <hr>
+           <template x-transition:enter.duration.700ms="slide-down" x-if="(direktorat.length > 1 && U1 > 0 && U2 > 0 && U3 > 0 && U4 > 0 && U5 > 0 && U6 > 0 && U7 > 0 && U8 > 0)">
+         <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit">
+               <span x-show="!submitting">Kirim</span>
+                <span x-show="submitting">
+                <i class="fas fa-spinner fa-spin"></i> Mengirim...
+                </span>
+         </button>
+
+          </template>
+        </div>
+        </template>
+
+      </form>
 
 
-    </div>
-    <hr>
-<footer class="w3-center">
-  <img src="rssoerojo.jpg" width="90">
+<!-- 
+<br><br><br><br>
+        <br>
+        <div x-text="`nama: ${nama}`"></div>
+        <div x-text="`hp: ${nomorHp}`"></div>
+        <div x-text="`ruang: ${ruangan}`"></div>
+        <div x-text="`Rating: ${rating} Bintang`"></div>
+        <div x-text="`Saran: ${saran}`"></div>
+        <div x-text="`direktorat: ${direktorat}`"></div>
+        <div x-text="`U1: ${U1}`"></div>
+        <div x-text="`U2: ${U2}`"></div>
+        <div x-text="`U3: ${U3}`"></div>
+        <div x-text="`U4: ${U4}`"></div>
+        <div x-text="`U5: ${U5}`"></div>
+        <div x-text="`U6: ${U6}`"></div>
+        <div x-text="`U7: ${U7}`"></div>
+        <div x-text="`U8: ${U8}`"></div>
+        <div x-text="`Saran: ${saranrs}`"></div>
+ -->
 
-  <div>eK3 Soerojo 2025
-  </div>
-      
-</footer>
+<script type="text/javascript">
+
+        function kirimData() {
+          this.submitting = true;
+          axios.get('https://script.google.com/macros/s/AKfycbylHDnKY5iQ1JttmOcXZImU6boABRBk_iGXIC2QplkcX2KYcMHj9e8CGpxeuPNx2oxEug/exec',{
+                  params:{
+                    do:'post',
+                    Nama: encodeURIComponent(this.nama),
+                    NomorHP: encodeURIComponent(this.nomorHp),
+                    Ruangandinilai: encodeURIComponent(this.ruangan),
+                    Rating: encodeURIComponent(this.rating),
+                    Saran: encodeURIComponent(this.saran),
+                    Direktorat: encodeURIComponent(this.direktorat),
+                    U1: encodeURIComponent(this.U1),
+                    U2: encodeURIComponent(this.U2),
+                    U3: encodeURIComponent(this.U3),
+                    U4: encodeURIComponent(this.U4),
+                    U5: encodeURIComponent(this.U5),
+                    U6: encodeURIComponent(this.U6),
+                    U7: encodeURIComponent(this.U7),
+                    U8: encodeURIComponent(this.U8),
+                    SaranRS: encodeURIComponent(this.saranrs)
+                   }
+              })
+                .then(response => {
+                    console.log(response.data);
+                    alert('Terimakasih telah berkontribusi untuk kemajuan Soerojo Hospital, senang menjadi bagian dari pengalaman pelayanan kesehatan Anda');
+                    // Reset form setelah data dikirim
+                        this.nama='';
+                        this.nomorHp='';
+                        this.ruangan='';
+                        this.rating=0;
+                        this.saran='';
+                        this.direktorat='';
+                        this.U1=0;
+                        this.U2=0;
+                        this.U3=0;
+                        this.U4=0;
+                        this.U5=0;
+                        this.U6=0;
+                        this.U7=0;
+                        this.U8=0;
+                        this.saranrs='';
+                        this.rsrating='';
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Gagal mengirim data!');
+                });
+        }
+</script>
+
+
+
+    </div><br><br><br><br><br><br><br><br><br>
+<footer class="w3-center">Soerojo Hospital 2025</footer>
 </body>
 </html>
+
+
+
+
+<!-- 
+1. Berikan nilai kepuasan kamu tentang lingkungan kerja di Soerojo Hospital
+2. Berikan nilai kepuasan kamu tentang hubungan dengan atasan
+3. Berikan nilai kepuasan kamu tentang penghargaan dan pengakuan dari Soerojo Hospital
+4. Berikan nilai kepuasan kamu tentang kesempatan pengembangan karier di Soerojo Hospital
+5. Berikan nilai kepuasan kamu tentang gaji dan kompensasi yang kamu terima
+6. Berikan nilai kepuasan kamu tentang keseimbangan kerja dan kehidupan di Soerojo Hospital
+7. Berikan nilai kepuasan kamu tentang komunikasi dalam rumah sakit di Soerojo Hospital
+8. Berikan nilai kepuasan kamu tentang budaya rumah sakit di Soerojo Hospital
+ -->
