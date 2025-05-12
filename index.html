@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/w3-css/4.1.0/w3.css" integrity="sha512-Ef5r/bdKQ7JAmVBbTgivSgg3RM+SLRjwU0cAgySwTSv4+jYcVeDukMp+9lZGWT78T4vCUxgT3g+E8t7uabwRuw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       <script src="https://cdn.jsdelivr.net/npm/axios@1.2.1/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <style>
     .fa-star {
       color: #ffd700;
@@ -97,6 +98,7 @@
 
         direktoratList:['PMK','SDMPP','PKLO','Non direktorat'],
         submitting: false,
+        next: false,
         ruanganList:[],
          }",
 
@@ -124,39 +126,51 @@
         <form class="w3-form" @submit.prevent="kirimData">
             <template x-if="rsrating == '' || rsrating == 'tidak'">
                 <div>
-            <template x-transition:enter.duration.700ms="slide-up" x-if = "(ruangan.length < 3) || (nama.length < 2 || nomorHp.length < 4)">
+            <template x-transition:enter.duration.700ms="slide-up" x-if = "next == false">
                         <div>
+                            <label><b>Isi identitas kamu sebagai pemberi rating</b></label><br>
                             <label for="nama">Nama</label>
                             <input class="w3-input w3-round w3-border" type="text" id="nama" x-model="nama">
-                        <br>
+                            <span x-show="nama.trim().length < 3" style="color: red; font-size: 10px;">Nama harus diisi minimal 3 karakter!</span>
+                            <br>
+                       
+                            <label :class="nama.trim().length < 3 ? 'w3-text-red' : ''" for="nomorHp">Nomor HP</label>
+                            <input :class="nama.trim().length < 3 ? 'w3-light-grey' : ''" class="w3-input w3-round w3-border" type="tel" id="nomorHp" :disabled="nama.trim().length < 3" x-model="nomorHp">
+                            <span x-show="nama.trim().length >= 3 && nomorHp.trim().length < 4" style="color: red; font-size: 10px;">Isi nomor HP untuk lanjut!</span>
+                            <br>
 
-                        
-                            <label for="nomorHp">Nomor HP</label>
-                            <input class="w3-input w3-round w3-border" type="tel" id="nomorHp" x-model="nomorHp">
-                        <br>
-
-                            <label>Direktorat</label>
-                         <select class="w3-input" x-model="direktorat">
+                            <label :class="nomorHp.trim().length < 3 ? 'w3-text-red' : ''">Direktorat</label>
+                         <select :class="nomorHp.trim().length < 3 ? 'w3-text-red' : ''" class="w3-input" x-model="direktorat">
                             <option value="" selected>Pilih salah satu</option>
-                            <template x-for="direktorat in direktoratList">
-                                <option :value="direktorat" x-text="direktorat"></option>
+                            <template x-for="d in direktoratList">
+                                <option :disabled="nomorHp.trim().length < 3" :value="d" x-text="d" :selected="d === direktorat"></option>
                             </template>
-                        </select><br>
+                        </select>
+                        <span x-show="direktorat.trim().length < 1 && nomorHp.trim().length >= 4" style="color: red; font-size: 10px;">Pilih Direktorat mana kamu berasal!</span>
+                        <br>
                         <hr>
-                        <template x-transition:enter.duration.700ms="slide-down" x-if="(nama.length > 1 && nomorHp.length > 3)">
+
                             <div>
-                      <label>Kamu mau memberi rating unit/ ruangan apa?</label>
-                            <select class="w3-input" x-model="ruangan">
+                        <label :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''"><b>Ruangan yang akan diberi rating</b></label><br>
+                          <label :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''">Pilih unit/ ruangan</label>
+                            <select :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''" class="w3-input" x-model="ruangan">
                                 <option value="" selected>Pilih salah satu</option>
                                 <template x-for="ruang in ruanganList">
-                                    <option :value="ruang.listRuangan" x-text="ruang.listRuangan"></option>
+                                    <option :value="ruang.listRuangan" x-text="ruang.listRuangan" :selected="ruang.listRuangan === ruangan"></option>
                                 </template>
-                            </select><br></div>
-                    </template>
+                            </select>
+                       <br></div>
+                        <button class="w3-button w3-blue w3-padding" @click="next = true" type="button" :disabled="ruangan.trim().length < 2">
+                            <span x-show="!next">Selanjutnya</span>
+                            <span x-show="next">
+                            <i class="fas fa-spinner fa-spin"></i> Tunggu...
+                            </span>
+                        </button>
+
                     </div>
                 </template>
 
-            <template x-transition:enter.duration.700ms="slide-down" x-if = "(ruangan.length > 2 && nama.length > 1 && nomorHp.length > 3)" >
+            <template x-transition:enter.duration.700ms="slide-down" x-if = "next == true" >
 
                         <div>
                             <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Berapa rating untuk unit/ ruangan <span x-text="`${ruangan}`"></span>?</label>
@@ -169,7 +183,17 @@
                             <div class="w3-center" x-text="persepsiUnit(rating)"></div>
                             
                             <label for="saran">Saran:</label>
-                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea>
+                            <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea><br>
+                            <template x-if="rsrating == ''">
+                                <div>
+                                <button class="w3-button w3-blue w3-padding" @click="next = false, rating =''" type="button">
+                                    <span>Kembali</span>
+                                </button>
+                                <button class="w3-button w3-blue w3-padding" @click="rating ='',saran = ''" type="button">
+                                    <span>Reset</span>
+                                </button>
+                                </div>
+                            </template>
 
                             <template x-if = "rating >= 1">
                                 <div>
@@ -179,14 +203,12 @@
                                     <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="ya">  Ya lanjut ke penilaian RS</label><br>
 
                                     <label><input class="w3-radio w3-padding" type="radio" name="rsrating" id="rsrating" x-model="rsrating" value="tidak">  Tidak kirim penilaian ini saja</label><br><br>
-                                    <template x-if="rsrating == 'tidak'" >
-                                     <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit">
+                                     <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit" :disabled="rsrating === ''">
                                            <span x-show="!submitting">Kirim</span>
                                             <span x-show="submitting">
                                             <i class="fas fa-spinner fa-spin"></i> Mengirim...
                                             </span>
                                      </button>
-                                    </template>
                               </div>
                         </template>
                         <br>
@@ -194,7 +216,7 @@
                 </template>
             </div>
         </template>
-        <template  x-if="rsrating == 'ya'">>
+        <template  x-if="rsrating == 'ya'">
             <div>
                  <label for="rating"><b>Hai <span x-text="`${nama}`"></span></b><br>Mari kita lanjutkan untuk memberi penilaian tentang rumah sakit</label>
          <hr>
@@ -274,15 +296,17 @@
         <label>Berikan saran untuk perbaikan Soerojo Hospital</label>
             <textarea class="w3-input w3-round w3-border" id="saranrs" x-model="saranrs"></textarea>
             <hr>
-           <template x-transition:enter.duration.700ms="slide-down" x-if="(direktorat.length > 1 && U1 > 0 && U2 > 0 && U3 > 0 && U4 > 0 && U5 > 0 && U6 > 0 && U7 > 0 && U8 > 0)">
-         <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit">
+            <span class="w3-text-red" style="font-size: 10px;" x-show="(U1 * U2 * U3 * U4 * U5 * U6 * U7 * U8 < 1)">Lengkapi dulu semua penilaian baru klik kirim!</span><br>
+            <button class="w3-button w3-blue w3-padding" @click="rsrating = '',U1 = '',U2 = '',U3 = '',U4 = '',U5 = '',U6 = '',U7 = '',U8 = ''" type="button">
+                <span>Kembali</span>
+            </button>
+            <button class="w3-button w3-blue w3-padding" x-bind:disabled="submitting" type="submit" :disabled="(U1 * U2 * U3 * U4 * U5 * U6 * U7 * U8 < 1)">
                <span x-show="!submitting">Kirim</span>
                 <span x-show="submitting">
                 <i class="fas fa-spinner fa-spin"></i> Mengirim...
                 </span>
          </button>
 
-          </template>
         </div>
         </template>
 
@@ -335,7 +359,7 @@
               })
                 .then(response => {
                     console.log(response.data);
-                    alert('Terimakasih telah berkontribusi untuk kemajuan Soerojo Hospital, senang menjadi bagian dari pengalaman pelayanan kesehatan Anda');
+                    showAlert('Terimakasih','Terimakasih telah berkontribusi untuk kemajuan Soerojo Hospital, senang menjadi bagian dari pengalaman pelayanan kesehatan Anda');
                     // Reset form setelah data dikirim
                         this.nama='';
                         this.nomorHp='';
@@ -356,9 +380,18 @@
                 })
                 .catch(error => {
                     console.error(error);
-                    alert('Gagal mengirim data!');
+                    showAlert('Warning','Gagal mengirim data!');
                 });
         }
+        function showAlert(tt,isi) {
+        Swal.fire({
+        title: tt,
+        text: isi,
+        icon: '',
+        confirmButtonText: 'OK'
+        })
+        }
+    
 </script>
 
 
@@ -381,3 +414,5 @@
 7. Berikan nilai kepuasan kamu tentang komunikasi dalam rumah sakit di Soerojo Hospital
 8. Berikan nilai kepuasan kamu tentang budaya rumah sakit di Soerojo Hospital
  -->
+
+ <!-- https://docs.google.com/spreadsheets/d/1pxDxKOIK74oa1wHJNk_zzOjYbSTtgaAukdiBRA5u610/edit?gid=0#gid=0 link sheet -->
