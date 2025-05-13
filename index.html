@@ -98,6 +98,7 @@
 
         direktoratList:['PMK','SDMPP','PKLO','Non direktorat'],
         submitting: false,
+        unit_geting:0,
         next: false,
         ruanganList:[],
          }",
@@ -110,10 +111,12 @@
 
         axios.get('https://script.google.com/macros/s/AKfycbylHDnKY5iQ1JttmOcXZImU6boABRBk_iGXIC2QplkcX2KYcMHj9e8CGpxeuPNx2oxEug/exec?do=ambilruang')
             .then(response => {
-              ruanganList = response.data;
+                unit_geting = 1
+                ruanganList = response.data;
             })
             .catch(error => {
-              console.error(error);
+                unit_geting = 2
+                console.error(error);
             });
 
           " >
@@ -152,11 +155,18 @@
 
                             <div>
                         <label :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''"><b>Ruangan yang akan diberi rating</b></label><br>
-                          <label :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''">Pilih unit/ ruangan</label>
+                          <label :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''">Pilih unit/ ruangan
+                            <span x-show="unit_geting==0">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </span>
+                            <span x-show="unit_geting==2">
+                            <i class="fas fa-spinner fa-spin"></i> Masalah jaringan silahkan refress ulang...
+                            </span>
+                          </label>
                             <select :class="direktorat.trim().length < 3 ? 'w3-text-red' : ''" class="w3-input" x-model="ruangan">
                                 <option value="" selected>Pilih salah satu</option>
                                 <template x-for="ruang in ruanganList">
-                                    <option :value="ruang.listRuangan" x-text="ruang.listRuangan" :selected="ruang.listRuangan === ruangan"></option>
+                                    <option :disabled="direktorat.trim().length < 3" :value="ruang.listRuangan" x-text="ruang.listRuangan" :selected="ruang.listRuangan === ruangan"></option>
                                 </template>
                             </select>
                        <br></div>
@@ -184,7 +194,7 @@
                             
                             <label for="saran">Saran:</label>
                             <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea><br>
-                            <template x-if="rsrating == ''">
+                            <template x-if="rsrating == '' && rating < 1 ">
                                 <div>
                                 <button x-show="rating <1 " class="w3-button w3-blue w3-padding" @click="next = false, rating =''" type="button">
                                     <span>Kembali</span>
@@ -206,7 +216,7 @@
                                             <i class="fas fa-spinner fa-spin"></i> Mengirim...
                                             </span>
                                      </button>
-                                     <button x-show="!submitting" class="w3-button w3-blue w3-padding" @click="rating ='',saran = ''" type="button" >
+                                     <button x-show="!submitting" class="w3-button w3-blue w3-padding" @click="rating ='',saran = '',rsrating = ''" type="button" >
                                     <span>Reset</span>
                                     </button>
 
