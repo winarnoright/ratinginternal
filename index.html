@@ -186,11 +186,8 @@
                             <textarea class="w3-input w3-round w3-border" id="saran" x-model="saran"></textarea><br>
                             <template x-if="rsrating == ''">
                                 <div>
-                                <button class="w3-button w3-blue w3-padding" @click="next = false, rating =''" type="button">
+                                <button x-show="rating <1 " class="w3-button w3-blue w3-padding" @click="next = false, rating =''" type="button">
                                     <span>Kembali</span>
-                                </button>
-                                <button class="w3-button w3-blue w3-padding" @click="rating ='',saran = ''" type="button">
-                                    <span>Reset</span>
                                 </button>
                                 </div>
                             </template>
@@ -209,6 +206,10 @@
                                             <i class="fas fa-spinner fa-spin"></i> Mengirim...
                                             </span>
                                      </button>
+                                     <button x-show="!submitting" class="w3-button w3-blue w3-padding" @click="rating ='',saran = ''" type="button" >
+                                    <span>Reset</span>
+                                    </button>
+
                               </div>
                         </template>
                         <br>
